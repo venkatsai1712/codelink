@@ -39,4 +39,14 @@ public class PostController {
     public ResponseEntity<?> likePost(@RequestHeader("user_id") Long user_id, @PathVariable Long post_id, @RequestBody Like like){
         return ResponseEntity.ok().body(postService.likePost(user_id,post_id,like));
     }
+
+    @PostMapping("/me/posts/{post_id}/dislikes")
+    public ResponseEntity<?> dislikePost(@RequestHeader("user_id") Long user_id, @PathVariable Long post_id, @RequestBody Like like){
+        return ResponseEntity.ok().body(postService.dislikePost(user_id,post_id,like));
+    }
+
+    @GetMapping("/me/posts/{post_id}/likes")
+    public ResponseEntity<?> getLikesCount(@RequestHeader("user_id") Long user_id, @PathVariable Long post_id){
+        return ResponseEntity.ok().body(postService.getLikesCount(user_id,post_id));
+    }
 }

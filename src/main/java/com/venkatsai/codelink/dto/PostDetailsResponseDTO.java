@@ -4,6 +4,7 @@ import com.venkatsai.codelink.model.Comment;
 import com.venkatsai.codelink.model.Like;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -18,7 +19,9 @@ public class PostDetailsResponseDTO {
     private String firstName;
     private String lastName;
     private String username;
+    private LocalDateTime createdDate;
     private String profilePicture;
     private List<Like> likes;
     private List<Comment> comments;
+    private Long userId;
 }

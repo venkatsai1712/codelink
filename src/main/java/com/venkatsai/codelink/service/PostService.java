@@ -1,5 +1,6 @@
 package com.venkatsai.codelink.service;
 
+import com.venkatsai.codelink.dto.LikeResponseDTO;
 import com.venkatsai.codelink.dto.PostDetailsResponseDTO;
 import com.venkatsai.codelink.model.Comment;
 import com.venkatsai.codelink.model.Like;
@@ -12,6 +13,7 @@ import com.venkatsai.codelink.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +32,7 @@ public class PostService {
     public Post createPost(Long id, Post post){
         Optional<User> user = userRepository.findById(id);
         if(user.isPresent()){
+            post.setCreatedDate(LocalDateTime.now());
             post.setUser(user.get());
             user.get().getPosts().add(post);
             userRepository.save(user.get());
@@ -51,8 +54,10 @@ public class PostService {
                         .lastName(user.get().getLastName())
                         .username(user.get().getUsername())
                         .profilePicture(user.get().getProfilePicture())
-                                .likes(post.getLikes())
-                                .comments(post.getComments())
+                        .likes(post.getLikes())
+                        .comments(post.getComments())
+                        .userId(id)
+                        .createdDate(post.getCreatedDate())
                         .build());
             });
             return posts;
@@ -75,16 +80,45 @@ public class PostService {
         return null;
     }
 
-    public Like likePost(Long id, Long postId,Like like) {
+    public Long getLikesCount(Long id,Long postId) {
+        Optional<Post> post = postRepository.findById(postId);
+        if(post.isPresent()){
+            Optional<User> user = userRepository.findById(id);
+            if(user.isPresent()){
+                return post.get().getLikes().stream().count();
+            }
+        }
+        return null;
+    }
+
+    public LikeResponseDTO likePost(Long id, Long postId, Like like) {
         Optional<Post> post = postRepository.findById(postId);
         if(post.isPresent()){
             Optional<User> user = userRepository.findById(id);
             if(user.isPresent()){
                 like.setPost(post.get());
+                like.setUserId(id);
                 likeRepository.save(like);
                 postRepository.save(post.get());
                 userRepository.save(user.get());
-                return like;
+                return LikeResponseDTO.builder().userId(id).postId(post.get().getId()).build();
+            }
+        }
+        return null;
+    }
+
+    public LikeResponseDTO dislikePost(Long id, Long postId, Like like) {
+        Optional<Post> post = postRepository.findById(postId);
+        if(post.isPresent()){
+            Optional<User> user = userRepository.findById(id);
+            if(user.isPresent()){
+                Optional<Like> l = likeRepository.findByUserIdAndPostId(id,postId);
+                if(l.isPresent()){
+                    likeRepository.delete(l.get());
+                }
+                postRepository.save(post.get());
+                userRepository.save(user.get());
+                return LikeResponseDTO.builder().userId(id).postId(post.get().getId()).build();
             }
         }
         return null;

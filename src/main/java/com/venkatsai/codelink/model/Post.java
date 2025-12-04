@@ -3,6 +3,8 @@ package com.venkatsai.codelink.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class Post {
     private Long id;
     private String content;
     private String photo;
+    private LocalDateTime  createdDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

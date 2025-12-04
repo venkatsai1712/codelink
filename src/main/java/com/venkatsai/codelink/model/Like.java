@@ -14,6 +14,7 @@ public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    private Long userId;
 
     @ManyToOne
     @JoinColumn(name="post_id")
